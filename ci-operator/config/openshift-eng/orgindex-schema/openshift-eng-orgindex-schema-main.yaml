@@ -1,0 +1,53 @@
+build_root:
+  project_image:
+    dockerfile_literal: |
+      FROM registry.ci.openshift.org/openshift/release:rhel-9-release-golang-1.23-openshift-4.19
+
+      # Pre-install Python 3.12
+      RUN dnf install -y python3.12 python3.12-pip python3.12-devel && \
+          dnf clean all
+
+      # Set default python interpreter for the container
+      ENV PYTHON=python3.12
+images:
+- dockerfile_literal: |
+    FROM src
+    # Install the package and dev tools from pyproject.toml
+    RUN python3.12 -m pip install .[dev]
+  from: src
+  to: tests-image
+resources:
+  '*':
+    requests:
+      cpu: 100m
+      memory: 1Gi
+tests:
+- as: lint
+  commands: |
+    export HOME=/tmp
+    make lint format-check RUN= PYTHON=python3.12
+  container:
+    from: tests-image
+- as: typecheck
+  commands: |
+    export HOME=/tmp
+    make typecheck RUN= PYTHON=python3.12
+  container:
+    from: tests-image
+- as: unit
+  commands: |
+    export HOME=/tmp
+    make test RUN= PYTHON=python3.12
+  container:
+    from: tests-image
+- as: schema
+  commands: |
+    export HOME=/tmp
+    # Contract gates: committed schema is current + version bump matches the diff.
+    make schema-check compat-check RUN= PYTHON=python3.12
+  container:
+    from: tests-image
+zz_generated_metadata:
+  branch: main
+  org: openshift-eng
+  repo: orgindex-schema

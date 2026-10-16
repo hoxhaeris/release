@@ -7603,6 +7603,7 @@ buildFarm:
       - openshift-aws-efs-csi-driver-operator-release-4.15-presubmits.yaml
       - openshift-priv-cert-manager-operator-cert-manager-v1.10.x-presubmits.yaml
       - openshift-eng-cyborg-data-main-presubmits.yaml
+      - openshift-eng-orgindex-schema-main-presubmits.yaml
       - openshift-local-storage-operator-release-4.15-presubmits.yaml
       - openshift-priv-cert-manager-operator-cert-manager-1.11-presubmits.yaml
       - red-hat-storage-ocs-operator-release-4.9-presubmits.yaml
